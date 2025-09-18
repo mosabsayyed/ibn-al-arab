@@ -15,9 +15,9 @@ export default function Index() {
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="relative z-20">
               <p className="mt-4 max-w-[772px] font-semibold text-black" style={{ fontSize: "29px", lineHeight: "28px", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                {locale === "en" ? "Your Partner to a Healthy Academia." : "شريكك لصحة أكاديمية أفضل."}
+                {locale === "en" ? "Your Partner to a Healthy Academia." : "شريكك لحياة أكاديمية صحية."}
               </p>
-              <h1 className="tracking-tight font-extrabold relative z-30" style={{ fontSize: "82px", lineHeight: "82px", letterSpacing: "-1.5px" }}>
+              <h1 className="tracking-tight font-extrabold relative z-30" style={{ fontSize: "82px", lineHeight: "120px", letterSpacing: "-1.5px" }}>
                 {locale === "en" ? "Healthy & Tasty. Just Like Home." : "صحي ولذيذ. تماماً مثل البيت."}
               </h1>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -40,7 +40,7 @@ export default function Index() {
 
       <section id="plans" className="container py-16">
         <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">{t("plans")}</h2>
-        <p className="text-muted-foreground mb-8">{locale === "en" ? "Monthly-only meal subscriptions." : "اشتراكات شهرية فقط."}</p>
+        <p className="text-muted-foreground mb-8">{locale === "en" ? "Monthly-only meal subscriptions." : "اشتراكات شهرية مخصصة لاحتياجاتك"}</p>
         <MealPlanPreview />
       </section>
 
