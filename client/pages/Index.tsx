@@ -17,7 +17,7 @@ export default function Index() {
               <p className="mt-4 max-w-[772px] font-semibold text-black" style={{ fontSize: "29px", lineHeight: "28px", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
                 {locale === "en" ? "Your Partner to a Healthy Academia." : "شريكك لحياة أكاديمية صحية."}
               </p>
-              <h1 className="tracking-tight font-extrabold relative z-30" style={{ fontSize: "82px", lineHeight: "120px", letterSpacing: "-1.5px" }}>
+              <h1 className="tracking-tight font-extrabold relative z-30" style={{ fontSize: "82px", lineHeight: "120px", letterSpacing: "-1.5px", fontFamily: locale === "en" ? "Poppins, sans-serif" : undefined }}>
                 {locale === "en" ? "Healthy & Tasty. Just Like Home." : "صحي ولذيذ. تماماً مثل البيت."}
               </h1>
               <div className="mt-6 flex flex-wrap gap-3">
