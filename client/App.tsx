@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { I18nProvider } from "@/context/i18n";
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
