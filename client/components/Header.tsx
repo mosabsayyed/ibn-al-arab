@@ -16,8 +16,17 @@ export default function Header() {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const email = String(form.get("email") || "");
+    const u = { email };
+    localStorage.setItem("user", JSON.stringify(u));
+    setUser(u);
+  };
+
+  const onRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
     const name = String(form.get("name") || "");
-    const u = { email, name };
+    const email = String(form.get("email") || "");
+    const u = { name, email };
     localStorage.setItem("user", JSON.stringify(u));
     setUser(u);
   };
@@ -42,14 +51,14 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <Button variant="ghost" onClick={() => setLocale(locale === "en" ? "ar" : "en")}
-            className={cn("font-semibold", locale === "ar" && "font-[\"Cairo\",sans-serif]")}
+            className={cn("font-semibold", locale === "ar" && "font-[\\\"Cairo\\\",sans-serif]")}
           >
             {locale === "en" ? "العربية" : "EN"}
           </Button>
           {user ? (
             <Button variant="outline" onClick={onLogout}>{t("logout")}</Button>
           ) : (
-            <AuthDialogs />
+            <AuthDialogs onLogin={onLogin} onRegister={onRegister} />
           )}
         </div>
       </div>
@@ -57,7 +66,7 @@ export default function Header() {
   );
 }
 
-function AuthDialogs() {
+function AuthDialogs({ onLogin, onRegister }: { onLogin: (e: React.FormEvent<HTMLFormElement>) => void; onRegister: (e: React.FormEvent<HTMLFormElement>) => void; }) {
   const { t } = useI18n();
   return (
     <div className="flex items-center gap-2">
@@ -69,10 +78,7 @@ function AuthDialogs() {
           <DialogHeader>
             <DialogTitle>{t("login")}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={(e) => {
-            const headerEl = document.querySelector("header");
-            (headerEl as any)?.dispatchEvent(new CustomEvent("auth:login", { detail: { target: e.target } }));
-          }} className="grid gap-3">
+          <form onSubmit={onLogin} className="grid gap-3">
             <Input required name="email" type="email" placeholder="email@example.com" />
             <Button type="submit">{t("login")}</Button>
           </form>
@@ -87,10 +93,7 @@ function AuthDialogs() {
           <DialogHeader>
             <DialogTitle>{t("register")}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={(e) => {
-            const headerEl = document.querySelector("header");
-            (headerEl as any)?.dispatchEvent(new CustomEvent("auth:register", { detail: { target: e.target } }));
-          }} className="grid gap-3">
+          <form onSubmit={onRegister} className="grid gap-3">
             <Input required name="name" placeholder="Your name" />
             <Input required name="email" type="email" placeholder="email@example.com" />
             <Button type="submit">{t("register")}</Button>
