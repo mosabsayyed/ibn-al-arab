@@ -10,9 +10,7 @@ export const handleCheckout: RequestHandler = (req, res) => {
     return res.status(400).json(bad);
   }
 
-  const url = `https://example-payments.test/checkout?plan=${encodeURIComponent(
-    planId,
-  )}`;
+  const url = `/checkout?plan=${encodeURIComponent(planId)}`;
 
   const ok: CheckoutResponse = {
     success: true,
