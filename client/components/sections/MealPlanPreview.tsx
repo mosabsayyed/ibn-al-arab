@@ -20,59 +20,42 @@ const PLANS: Array<{
 
 export default function MealPlanPreview() {
   const { locale, t } = useI18n();
-
-  const subscribe = async (planId: PlanId) => {
-    const res = await fetch("/api/payment/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId }),
-    });
-    const data = (await res.json()) as CheckoutResponse;
-    if (data.checkoutUrl) {
-      window.open(data.checkoutUrl, "_blank");
-    }
+  // Navigate to internal mock checkout to avoid blocked external window
+  const subscribe = (planId: PlanId) => {
+    window.location.href = `/checkout?plan=${planId}`;
   };
 
   return (
-    <section id="preview" className="container py-16">
-      <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-6">
-        {t("mealPlanPreview")}
-      </h2>
-      <p className="text-muted-foreground max-w-2xl mb-10">
-        {locale === "en"
-          ? "We’re an Arabic Cuisine restaurant serving traditional dishes. Cloud-based. Monthly subscriptions only."
-          : "نقدّم المأكولات العربية التقليدية. مطعم سحابي. اشتراكات شهرية فقط."}
-      </p>
-      <div className="grid gap-6 md:grid-cols-3">
-        {PLANS.map((p) => (
-          <Card key={p.id} className="relative overflow-hidden border-2">
-            <CardHeader>
-              <CardTitle className="text-2xl flex items-baseline gap-2">
-                <span>{locale === "en" ? p.titleEn : p.titleAr}</span>
-                <span className="text-xs rounded-full bg-amber-100 text-amber-800 px-2 py-0.5">{t("perMonth")}</span>
-              </CardTitle>
-              <CardDescription>
-                {locale === "en"
-                  ? `Delivery Days: ${p.days} days, ${p.mealsPerDay} meal${p.mealsPerDay>1?"s":""} per day`
-                  : `أيام التوصيل: ${p.days} يوم، ${p.mealsPerDay} وجبة يومياً`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-3xl font-extrabold">
-                {p.priceAED.toLocaleString()} <span className="text-lg font-semibold">AED</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {locale === "en"
-                  ? `Student Discount: ${p.discountApprox} → ${p.studentPriceAED.toLocaleString()} AED`
-                  : `خصم الطلاب: ${p.discountApprox} → ${p.studentPriceAED.toLocaleString()} درهم`}
-              </div>
-              <Button className="w-full" onClick={() => subscribe(p.id)}>
-                {t("subscribe")} · {locale === "en" ? p.titleEn : p.titleAr}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
+    <div className="grid gap-6 md:grid-cols-3">
+      {PLANS.map((p) => (
+        <Card key={p.id} className="relative overflow-hidden border-2">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-baseline gap-2">
+              <span>{locale === "en" ? p.titleEn : p.titleAr}</span>
+              <span className="text-xs rounded-full bg-amber-100 text-amber-800 px-2 py-0.5">{t("perMonth")}</span>
+            </CardTitle>
+            <CardDescription>
+              {locale === "en"
+                ? `Delivery Days: ${p.days} days, ${p.mealsPerDay} meal${p.mealsPerDay>1?"s":""} per day`
+                : `أيام التوصيل: ${p.days} يوم، ${p.mealsPerDay} وجبة يومياً`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <span className="text-3xl font-extrabold line-through text-muted-foreground">
+                {p.priceAED.toLocaleString()} AED
+              </span>
+              <span className="text-3xl font-extrabold text-emerald-600">
+                {p.studentPriceAED.toLocaleString()} AED
+              </span>
+              <span className="text-3xl font-extrabold text-emerald-600">{p.discountApprox}</span>
+            </div>
+            <Button className="w-full" onClick={() => subscribe(p.id)}>
+              {t("subscribe")} · {locale === "en" ? p.titleEn : p.titleAr}
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
