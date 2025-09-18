@@ -44,8 +44,7 @@ export default function Header() {
           <span className="font-extrabold tracking-tight text-xl">{t("brand")}</span>
         </a>
         <nav className="hidden md:flex items-center gap-6 text-sm">
-          <a className="hover:text-primary" href="#plans">{t("plans")}</a>
-          <a className="hover:text-primary" href="#preview">{t("mealPlanPreview")}</a>
+          <a className="hover:text-primary" href="#plans">{t("monthlyPlans")}</a>
           <a className="hover:text-primary" href="#gallery">{t("mealsGallery")}</a>
           <a className="hover:text-primary" href="#delivery">{t("deliveryChecker")}</a>
         </nav>
