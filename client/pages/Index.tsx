@@ -39,7 +39,7 @@ export default function Index() {
       </section>
 
       <section id="plans" className="container py-16">
-        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">{t("plans")}</h2>
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">{t("monthlyPlans")}</h2>
         <p className="text-muted-foreground mb-8">{locale === "en" ? "Monthly-only meal subscriptions." : "اشتراكات شهرية مخصصة لاحتياجاتك"}</p>
         <MealPlanPreview />
       </section>
