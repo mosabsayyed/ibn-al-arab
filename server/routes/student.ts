@@ -1,17 +1,8 @@
 import { RequestHandler } from "express";
-import {
-  StudentValidateRequest,
-  StudentValidateResponse,
-} from "@shared/api";
+import { StudentValidateRequest, StudentValidateResponse } from "@shared/api";
 
 // Very lightweight validation: email domain appears academic, and expiry date is in the future
-const ACADEMIC_HINTS = [
-  ".edu",
-  ".ac.ae",
-  ".ac",
-  "university",
-  "college",
-];
+const ACADEMIC_HINTS = [".edu", ".ac.ae", ".ac", "university", "college"];
 
 export const handleStudentValidate: RequestHandler = (req, res) => {
   const body = req.body as Partial<StudentValidateRequest>;

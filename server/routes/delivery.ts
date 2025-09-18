@@ -6,7 +6,8 @@ export const handleDeliveryCheck: RequestHandler = (req, res) => {
   const body = req.body as Partial<DeliveryCheckRequest>;
   const city = (body.city ?? "").toString().trim().toLowerCase();
 
-  const eligible = city === "sharjah" || city === "sharjah, ae" || city === "shj";
+  const eligible =
+    city === "sharjah" || city === "sharjah, ae" || city === "shj";
 
   const response: DeliveryCheckResponse = {
     eligible,

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export type Locale = "en" | "ar";
 
@@ -65,8 +71,12 @@ const STRINGS: Record<Locale, Dict> = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocale] = useState<Locale>(() => (localStorage.getItem("locale") as Locale) || "en");
+export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [locale, setLocale] = useState<Locale>(
+    () => (localStorage.getItem("locale") as Locale) || "en",
+  );
 
   useEffect(() => {
     localStorage.setItem("locale", locale);
@@ -80,7 +90,9 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [locale]);
 
   return (
-    <I18nContext.Provider value={{ locale, setLocale, t }}>{children}</I18nContext.Provider>
+    <I18nContext.Provider value={{ locale, setLocale, t }}>
+      {children}
+    </I18nContext.Provider>
   );
 };
 
