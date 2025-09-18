@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { handleDeliveryCheck } from "./routes/delivery";
+import { handleStudentValidate } from "./routes/student";
+import { handleCheckout } from "./routes/payment";
 
 export function createServer() {
   const app = express();
@@ -18,6 +21,11 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // App routes
+  app.post("/api/check-delivery", handleDeliveryCheck);
+  app.post("/api/validate-student", handleStudentValidate);
+  app.post("/api/payment/checkout", handleCheckout);
 
   return app;
 }
