@@ -12,7 +12,7 @@ type I18nContextValue = {
 
 const STRINGS: Record<Locale, Dict> = {
   en: {
-    brand: "Ibn al arab",
+    brand: "Ibn Al Arab",
     tagline: "Cloud-based Arabic cuisine. Monthly meal subscriptions only.",
     mealPlanPreview: "Meal Plan Preview",
     mealsGallery: "Meals Gallery",
@@ -51,7 +51,7 @@ const STRINGS: Record<Locale, Dict> = {
     notEligible: "حالياً نوصل داخل الشارقة فقط.",
     studentDiscount: "التحقق من خصم الطلبة",
     email: "بريد الطالب",
-    expiry: "تاريخ الان��هاء",
+    expiry: "تاريخ الانتهاء",
     validate: "تحقق",
     login: "تسجيل الدخول",
     register: "إنشاء حساب",

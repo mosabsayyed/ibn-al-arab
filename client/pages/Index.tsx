@@ -10,19 +10,19 @@ export default function Index() {
   return (
     <main id="top">
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-100/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-no-repeat bg-center bg-cover opacity-50 pointer-events-none" style={{ backgroundImage: "url(https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2Fcfe12bae1afa47e08fa23ad97e57d913)" }} />
         <div className="container py-20 md:py-28">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
                 {locale === "en"
-                  ? "Arabic cuisine, cloud-delivered."
-                  : "مأكولات عربية تصل إليك سحابياً"}
+                  ? "Healthy & Tasty. Just Like Home."
+                  : "صحي ولذيذ. تماماً مثل البيت."}
               </h1>
-              <p className="mt-4 text-muted-foreground text-lg max-w-prose">
+              <p className="mt-4 text-lg max-w-prose font-semibold text-black shadow-sm">
                 {locale === "en"
-                  ? "We’re an Arabic Cuisine restaurant serving traditional dishes. Cloud-based. We exclusively offer monthly meal subscriptions."
-                  : "نحن مطعم للمأكولات العربية التقليدية، سحابي بالكامل. نقدم اشتراكات شهرية للوجبات فقط."}
+                  ? "Your Partner to a Healthy Academia."
+                  : "شريكك لصحة أكاديمية أفضل."}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href="#plans"><Button>{t("plans")}</Button></a>
@@ -31,7 +31,7 @@ export default function Index() {
             </div>
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop"
+                src="https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2F9479cba51ab742e2acda504c5e2258be"
                 alt="Arabic cuisine spread"
                 className="rounded-xl shadow-xl object-cover w-full h-[260px] md:h-[360px]"
               />

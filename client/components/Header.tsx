@@ -40,7 +40,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <a href="#top" className="flex items-center gap-2">
-          <img src="https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2F593b7399b65c48a3b7f8aec00e61970d?format=webp&width=160" alt="اب�� العرب logo" className="h-9 w-auto rounded-sm bg-white p-0.5" />
+          <img src="https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2F593b7399b65c48a3b7f8aec00e61970d?format=webp&width=160" alt="ابن  العرب logo" className="h-[60px] w-auto rounded bg-white p-0.5" />
           <span className="font-extrabold tracking-tight text-xl">{t("brand")}</span>
         </a>
         <nav className="hidden md:flex items-center gap-6 text-sm">
