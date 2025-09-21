@@ -15,8 +15,11 @@ export default function Footer() {
           <a href="#gallery" className="hover:text-primary">
             {t("mealsGallery")}
           </a>
-          <a href="#delivery" className="hover:text-primary">
-            {t("deliveryChecker")}
+          <a 
+            href="mailto:feedback_ibnalarab@miles.click?subject=Feedback%20-%20Ibn%20Al%20Arab" 
+            className="hover:text-primary text-red-600 font-medium"
+          >
+            Feedback?
           </a>
         </div>
       </div>

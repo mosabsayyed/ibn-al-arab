@@ -12,7 +12,7 @@ import { DeliveryCheckResponse } from "@shared/api";
 import { useState } from "react";
 
 export default function DeliveryZoneChecker() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [city, setCity] = useState("");
   const [result, setResult] = useState<DeliveryCheckResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,9 +41,7 @@ export default function DeliveryZoneChecker() {
             {t("deliveryChecker")} · {t("sharjahOnly")}
           </CardTitle>
           <CardDescription>
-            {locale === "en"
-              ? "Type your city. Eligibility is Sharjah-only."
-              : "أدخل مدينتك. التوصيل للشارقة فقط."}
+            {t("deliveryCheckerDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -51,7 +49,7 @@ export default function DeliveryZoneChecker() {
             <Input
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder={locale === "en" ? "Your city" : "مدينتك"}
+              placeholder={t("yourCity")}
             />
             <Button type="submit" disabled={loading}>
               {t("check")}

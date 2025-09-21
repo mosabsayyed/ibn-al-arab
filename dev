@@ -1,0 +1,167 @@
+#!/bin/bash
+# Universal dev server script - Safe for AI assistants to use
+# This script prevents accidentally killing running dev servers
+
+set -e  # Exit on any error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[DEV]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if dev server is already running
+check_running() {
+    local port=${DEV_PORT:-8080}
+    if lsof -i :$port >/dev/null 2>&1; then
+        print_warning "Dev server appears to be running on port $port"
+        print_warning "If this is incorrect, stop it manually: pkill -f 'vite\|next\|react-scripts'"
+        print_warning "Or specify a different port: DEV_PORT=3000 ./dev"
+        exit 1
+    fi
+}
+
+# Detect package manager
+detect_package_manager() {
+    if [ -f "pnpm-lock.yaml" ]; then
+        echo "pnpm"
+    elif [ -f "yarn.lock" ]; then
+        echo "yarn"
+    elif [ -f "package-lock.json" ]; then
+        echo "npm"
+    else
+        echo "npm"  # default fallback
+    fi
+}
+
+# Main execution
+main() {
+    print_status "Starting development server..."
+    
+    # Check if already running
+    check_running
+    
+    # Detect package manager
+    local pm=$(detect_package_manager)
+    print_status "Detected package manager: $pm"
+    
+    # Build the command
+    local cmd=""
+    case $pm in
+        pnpm)
+            cmd="pnpm dev"
+            ;;
+        yarn)
+            cmd="yarn dev"
+            ;;
+        npm)
+            cmd="npm run dev"
+            ;;
+    esac
+    
+    # Add port if specified
+    if [ -n "$DEV_PORT" ]; then
+        case $pm in
+            pnpm)
+                cmd="$cmd --port $DEV_PORT"
+                ;;
+            yarn)
+                cmd="$cmd --port $DEV_PORT"
+                ;;
+            npm)
+                cmd="$cmd -- --port $DEV_PORT"
+                ;;
+        esac
+    fi
+    
+    print_status "Running: $cmd"
+    print_status "Server will run in background. Use Ctrl+C to stop if needed."
+    
+    # Run with nohup to survive terminal disconnects
+    nohup $cmd > dev.log 2>&1 &
+    local pid=$!
+    
+    # Save PID for potential cleanup
+    echo $pid > .dev.pid
+    
+    print_success "Dev server started with PID $pid"
+    print_success "Logs: tail -f dev.log"
+    print_success "Stop: kill $pid"
+    
+    # Wait a moment and check if it's still running
+    sleep 2
+    if kill -0 $pid 2>/dev/null; then
+        print_success "Server appears to be running successfully"
+    else
+        print_error "Server may have failed to start. Check dev.log"
+        exit 1
+    fi
+}
+
+# Handle script arguments
+case "${1:-}" in
+    stop)
+        if [ -f ".dev.pid" ]; then
+            pid=$(cat .dev.pid)
+            if kill -0 $pid 2>/dev/null; then
+                print_status "Stopping dev server (PID: $pid)..."
+                kill $pid
+                sleep 1  # Give it time to shut down
+                rm .dev.pid
+                print_success "Dev server stopped successfully"
+            else
+                print_warning "Dev server process $pid not found (already stopped?)"
+                rm .dev.pid
+            fi
+        else
+            print_status "Dev server is already stopped (no PID file found)"
+        fi
+        ;;
+    status)
+        if [ -f ".dev.pid" ]; then
+            pid=$(cat .dev.pid)
+            if kill -0 $pid 2>/dev/null; then
+                print_success "Dev server running (PID: $pid)"
+            else
+                print_warning "Dev server PID $pid not running"
+                rm .dev.pid
+            fi
+        else
+            print_status "No dev server PID file found"
+        fi
+        ;;
+    logs)
+        if [ -f "dev.log" ]; then
+            if [ "$2" = "--follow" ] || [ "$2" = "-f" ]; then
+                print_status "Following logs (Ctrl+C to stop)..."
+                tail -f dev.log
+            else
+                print_status "Showing last 50 lines of logs. Use './dev logs --follow' to follow logs."
+                tail -n 50 dev.log
+            fi
+        else
+            print_warning "No dev.log file found. Start the server first with './dev start'"
+        fi
+        ;;
+    *)
+        main
+        ;;
+esac

@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "",
+      "args": [
+        "docker",
+        "--image",
+        "mcp/context7:latest"
+      ]
+    },
+    "sequentialthinking": {
+      "command": "",
+      "args": [
+        "docker",
+        "--image",
+        "mcp/sequentialthinking:latest"
+      ]
+    },
+    "memory": {
+      "command": "",
+      "args": [
+        "docker",
+        "--image",
+        "mcp/memory:latest"
+      ]
+    }
+  }
+}

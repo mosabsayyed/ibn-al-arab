@@ -1,0 +1,211 @@
+create table public.profiles (
+  user_id uuid not null,
+  email public.citext not null,
+  first_name text null,
+  last_name text null,
+  language_pref text null,
+  date_of_birth date null,
+  height_cm numeric(5, 2) null,
+  weight_kg numeric(6, 3) null,
+  goal text null,
+  phone_e164 text null,
+  is_admin boolean not null default false,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint profiles_pkey primary key (user_id),
+  constraint profiles_email_key unique (email),
+  constraint profiles_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE,
+  constraint profiles_weight_kg_check check (
+    (
+      (weight_kg is null)
+      or (weight_kg > (0)::numeric)
+    )
+  ),
+  constraint profiles_language_pref_check check (
+    (
+      language_pref = any (array['en'::text, 'ar'::text])
+    )
+  ),
+  constraint profiles_goal_check check (
+    (
+      goal = any (
+        array['lose'::text, 'maintain'::text, 'gain'::text]
+      )
+    )
+  ),
+  constraint profiles_height_cm_check check (
+    (
+      (height_cm is null)
+      or (height_cm > (0)::numeric)
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger trg_profiles_updated_at BEFORE
+update on profiles for EACH row
+execute FUNCTION set_updated_at ();
+
+=================================================================================
+create table public.meals (
+  id uuid not null default gen_random_uuid (),
+  name_en text not null,
+  name_ar text not null,
+  description_en text null,
+  description_ar text null,
+  hero_image_url text null,
+  tags text[] null default '{}'::text[],
+  allergens text[] null default '{}'::text[],
+  status public.content_status not null default 'active'::content_status,
+  version integer not null default 1,
+  created_by uuid null,
+  updated_by uuid null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint meals_pkey primary key (id),
+  constraint meals_created_by_fkey foreign KEY (created_by) references profiles (user_id) on delete set null,
+  constraint meals_updated_by_fkey foreign KEY (updated_by) references profiles (user_id) on delete set null
+) TABLESPACE pg_default;
+
+create index IF not exists meals_status_idx on public.meals using btree (status) TABLESPACE pg_default;
+
+create index IF not exists meals_tags_gin on public.meals using gin (tags) TABLESPACE pg_default;
+
+create index IF not exists meals_allergens_gin on public.meals using gin (allergens) TABLESPACE pg_default;
+
+create trigger trg_meals_updated_at BEFORE
+update on meals for EACH row
+execute FUNCTION set_updated_at ();
+
+=================================================================================
+
+create table public.plans (
+  id uuid not null default gen_random_uuid (),
+  code text not null,
+  name_en text not null,
+  name_ar text not null,
+  meals_per_day smallint not null,
+  delivery_days smallint not null,
+  duration_label text not null default '1_month'::text,
+  base_price_aed numeric(10, 2) not null,
+  position_note_en text null,
+  position_note_ar text null,
+  status public.content_status not null default 'active'::content_status,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  discounted_price_aed numeric null,
+  constraint plans_pkey primary key (id),
+  constraint plans_code_key unique (code),
+  constraint plans_base_price_aed_check check ((base_price_aed >= (0)::numeric)),
+  constraint plans_delivery_days_check check (
+    (
+      (delivery_days > 0)
+      and (delivery_days <= 31)
+    )
+  ),
+  constraint plans_meals_per_day_check check (
+    (
+      (meals_per_day > 0)
+      and (meals_per_day <= 6)
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger trg_plans_updated_at BEFORE
+update on plans for EACH row
+execute FUNCTION set_updated_at ();
+
+=================================================================================
+
+create table public.subscriptions (
+  id uuid not null default gen_random_uuid (),
+  user_id uuid not null,
+  plan_id uuid not null,
+  status public.subscription_status not null default 'pending_payment'::subscription_status,
+  start_date date not null,
+  end_date date not null,
+  delivery_address_id uuid not null,
+  student_discount_applied boolean not null default false,
+  price_charged_aed numeric(10, 2) not null,
+  currency text not null default 'AED'::text,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint subscriptions_pkey primary key (id),
+  constraint subscriptions_delivery_address_id_fkey foreign KEY (delivery_address_id) references user_addresses (id) on delete RESTRICT,
+  constraint subscriptions_plan_id_fkey foreign KEY (plan_id) references plans (id) on delete RESTRICT,
+  constraint subscriptions_user_id_fkey foreign KEY (user_id) references profiles (user_id) on delete CASCADE,
+  constraint subscriptions_price_charged_aed_check check ((price_charged_aed >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists subscriptions_user_idx on public.subscriptions using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists subscriptions_plan_idx on public.subscriptions using btree (plan_id) TABLESPACE pg_default;
+
+create index IF not exists subscriptions_status_idx on public.subscriptions using btree (status) TABLESPACE pg_default;
+
+create trigger trg_subscriptions_updated_at BEFORE
+update on subscriptions for EACH row
+execute FUNCTION set_updated_at ();
+
+--------------------------------------------------------------------
+create table public.user_addresses (
+  id uuid not null default gen_random_uuid (),
+  user_id uuid not null,
+  label text null,
+  formatted_address text not null,
+  place_id text null,
+  latitude numeric(9, 6) not null,
+  longitude numeric(9, 6) not null,
+  apartment_notes text null,
+  is_primary boolean not null default false,
+  is_within_zone boolean not null default false,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint user_addresses_pkey primary key (id),
+  constraint user_addresses_user_id_place_id_key unique (user_id, place_id),
+  constraint user_addresses_user_id_fkey foreign KEY (user_id) references profiles (user_id) on delete CASCADE,
+  constraint user_addresses_latitude_check check (
+    (
+      (latitude >= ('-90'::integer)::numeric)
+      and (latitude <= (90)::numeric)
+    )
+  ),
+  constraint user_addresses_longitude_check check (
+    (
+      (longitude >= ('-180'::integer)::numeric)
+      and (longitude <= (180)::numeric)
+    )
+  )
+) TABLESPACE pg_default;
+
+create index IF not exists user_addresses_user_idx on public.user_addresses using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists user_addresses_geo_idx on public.user_addresses using btree (latitude, longitude) TABLESPACE pg_default;
+
+create trigger trg_user_addresses_updated_at BEFORE
+update on user_addresses for EACH row
+execute FUNCTION set_updated_at ();
+-----------------------------------------------------------------
+create table public.payments (
+  id uuid not null default gen_random_uuid (),
+  subscription_id uuid not null,
+  method public.payment_method not null,
+  amount_aed numeric(10, 2) not null,
+  currency text not null default 'AED'::text,
+  status public.payment_status not null,
+  provider text null,
+  provider_txn_id text null,
+  receipt_url text null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint payments_pkey primary key (id),
+  constraint payments_subscription_id_fkey foreign KEY (subscription_id) references subscriptions (id) on delete CASCADE,
+  constraint payments_amount_aed_check check ((amount_aed >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists payments_subscription_idx on public.payments using btree (subscription_id) TABLESPACE pg_default;
+
+create index IF not exists payments_status_idx on public.payments using btree (status) TABLESPACE pg_default;
+
+create trigger trg_payments_updated_at BEFORE
+update on payments for EACH row
+execute FUNCTION set_updated_at ();

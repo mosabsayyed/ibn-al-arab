@@ -1,7 +1,5 @@
 import MealPlanPreview from "@/components/sections/MealPlanPreview";
 import MealsGallery from "@/components/sections/MealsGallery";
-import DeliveryZoneChecker from "@/components/sections/DeliveryZoneChecker";
-import StudentDiscount from "@/components/sections/StudentDiscount";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/context/i18n";
 
@@ -13,8 +11,7 @@ export default function Index() {
         <div
           className="absolute inset-0 bg-no-repeat bg-center bg-cover opacity-30 pointer-events-none z-0"
           style={{
-            backgroundImage:
-              "url(https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2Fcfe12bae1afa47e08fa23ad97e57d913)",
+            backgroundImage: "url(/herobackgd.png)",
             textShadow: "1px 1px 3px rgba(0,0,0,1)",
           }}
         />
@@ -29,9 +26,7 @@ export default function Index() {
                   boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                 }}
               >
-                {locale === "en"
-                  ? "Your Partner to a Healthy Academia."
-                  : "شريكك لحياة أكاديمية صحية."}
+                {t("tagline")}
               </p>
               <h1
                 className="tracking-tight font-extrabold relative z-30"
@@ -43,9 +38,7 @@ export default function Index() {
                     locale === "en" ? "Poppins, sans-serif" : undefined,
                 }}
               >
-                {locale === "en"
-                  ? "Healthy & Tasty. Just Like Home."
-                  : "صحي ولذيذ. تماماً مثل البيت."}
+                {t("healthyTastyHome")}
               </h1>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href="#plans">
@@ -58,7 +51,7 @@ export default function Index() {
             </div>
             <div className="relative">
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Fc88de0889c4545b98ff911f5842e062a%2F9479cba51ab742e2acda504c5e2258be"
+                src="/mansaf.png"
                 alt="Arabic cuisine spread"
                 className="rounded-xl shadow-xl object-cover w-full h-[260px] md:h-[360px]"
               />
@@ -74,18 +67,12 @@ export default function Index() {
           {t("monthlyPlans")}
         </h2>
         <p className="text-muted-foreground mb-8">
-          {locale === "en"
-            ? "Monthly-only meal subscriptions."
-            : "اشتراكات شهرية مخصصة لاحتياجاتك"}
+          {t("monthlySubscriptionTagline")}
         </p>
         <MealPlanPreview />
       </section>
 
       <MealsGallery />
-
-      <DeliveryZoneChecker />
-
-      <StudentDiscount />
     </main>
   );
 }
