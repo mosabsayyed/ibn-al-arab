@@ -1,3 +1,7 @@
+// PRODUCT_SIGNOFF_REQUIRED
+// This data is for display and structure only.
+// Actual prices MUST be fetched from a secure, external configuration source.
+
 export type PlanId = "flex" | "focus" | "fuel";
 
 export interface Plan {
@@ -6,9 +10,8 @@ export interface Plan {
   titleAr: string;
   days: number;
   mealsPerDay: number;
-  priceAED: number;
-  studentPriceAED: number;
-  discountApprox: string;
+  priceReference: string; // Key for price lookup, e.g., "FLEX_PLAN_PRICE"
+  studentPriceReference: string; // Key for student price lookup
 }
 
 export const PLANS: Plan[] = [
@@ -18,9 +21,8 @@ export const PLANS: Plan[] = [
     titleAr: "تقوية",
     days: 26,
     mealsPerDay: 2,
-    priceAED: 1350,
-    studentPriceAED: 1100,
-    discountApprox: "~18.5%",
+    priceReference: "FLEX_REGULAR_MONTHLY",
+    studentPriceReference: "FLEX_STUDENT_MONTHLY",
   },
   {
     id: "focus",
@@ -28,9 +30,8 @@ export const PLANS: Plan[] = [
     titleAr: "تركيز",
     days: 26,
     mealsPerDay: 1,
-    priceAED: 730,
-    studentPriceAED: 640,
-    discountApprox: "~12%",
+    priceReference: "FOCUS_REGULAR_MONTHLY",
+    studentPriceReference: "FOCUS_STUDENT_MONTHLY",
   },
   {
     id: "fuel",
@@ -38,9 +39,8 @@ export const PLANS: Plan[] = [
     titleAr: "تغذية",
     days: 20,
     mealsPerDay: 1,
-    priceAED: 600,
-    studentPriceAED: 550,
-    discountApprox: "~8%",
+    priceReference: "FUEL_REGULAR_MONTHLY",
+    studentPriceReference: "FUEL_STUDENT_MONTHLY",
   },
 ];
 

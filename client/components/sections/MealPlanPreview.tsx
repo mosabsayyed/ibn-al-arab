@@ -7,8 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useI18n } from "@/context/i18n";
-import { PLANS } from "@shared/data/plans";
-import { type PlanId } from "@shared/data/plans";
+import { PLANS } from "../../../shared/data/plans";
+import { type PlanId } from "../../../shared/data/plans";
 
 export default function MealPlanPreview() {
   const { locale, t } = useI18n();
@@ -40,20 +40,17 @@ export default function MealPlanPreview() {
               <CardContent className="space-y-3">
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-xl font-extrabold">
-                    {p.priceAED.toLocaleString()} {t("AED")}
+                    {/* This will be replaced with priceReference */}
                   </span>
                   <span className="text-sm text-muted-foreground">
                     {t("specialStudentDiscount")}
                   </span>
                   <div className="flex flex-wrap items-baseline gap-2">
                     <span className="text-xl font-extrabold line-through text-muted-foreground block">
-                      {p.priceAED.toLocaleString()} {t("AED")}
+                      {/* This will be replaced with priceReference */}
                     </span>
                     <span className="text-3xl font-extrabold text-emerald-600 block">
-                      {p.studentPriceAED.toLocaleString()} {t("AED")}
-                    </span>
-                    <span className="text-base font-extrabold text-emerald-600">
-                      {p.discountApprox}
+                      {/* This will be replaced with studentPriceReference */}
                     </span>
                   </div>
                 </div>
@@ -65,7 +62,7 @@ export default function MealPlanPreview() {
             {/* Chef mascot side */}
             <div className="w-full md:w-40 h-40 md:h-auto bg-gradient-to-b from-red-50 to-red-100 flex items-center justify-center">
               <img
-                src={`/${p.id}.png`}
+                src={`/${p.id.toLowerCase()}.png`}
                 alt={`${locale === "en" ? p.titleEn : p.titleAr} Chef`}
                 className="w-full h-full md:w-full md:h-auto object-contain max-h-40 md:max-h-56"
               />

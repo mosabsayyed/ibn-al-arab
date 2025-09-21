@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Ibn Al Arab API (Spec Contracts)
+  version: 0.1.0
+servers:
+  - url: https://api.example.local
+paths:
+  /plans:
+    get:
+      summary: List plans
+      responses:
+        '200':
+          description: OK
+  /checkout:
+    post:
+      summary: Create checkout for a plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planId:
+                  type: string
+      responses:
+        '201':
+          description: Checkout created
+components:
+  schemas:
+    Plan:
+      type: object
+      properties:
+        id:
+          type: string
+        title_en:
+          type: string
+        title_ar:
+          type: string
+        priceReference:
+          type: string
+    CheckoutRequest:
+      type: object
+      properties:
+        planId:
+          type: string

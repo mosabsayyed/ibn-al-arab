@@ -1,0 +1,64 @@
+| English          | Arabic                  |
+|------------------|-------------------------|
+| Abu Tina        | أبو تينة               |
+| Al Abar         | العبار                 |
+| Al Azra         | العذرى                 |
+| Al Butina       | البطينة                |
+| Al Darari       | الدراري                |
+| Al Falaj        | الفلاح                 |
+| Al Fayha        | الفيحاء                |
+| Al Fisht        | الفيضة                 |
+| Al Gaphia       | الغافية                |
+| Al Gharayen     | الغرايين               |
+| Al Ghubaiba     | الغبيبة                |
+| Al Goaz         | الغواز                 |
+| Al Hazana       | الهزانة                |
+| Al Heera        | الحيرة                 |
+| Al Jazat        | الجزات                 |
+| Al Juraina      | الجرينة                |
+| Al Khalidiya    | الخليدهية              |
+| Al Khan         | الخان                  |
+| Al Lyyah        | اللوية                 |
+| Al Majaz        | المجاز                 |
+| Al Mamzar       | الممزر                 |
+| Al Manakh       | المناخ                 |
+| Al Mansura      | المنصورة               |
+| Al Mirgab       | المرقب                 |
+| Al Musala       | المصلى                 |
+| Al Naba         | النبع                  |
+| Al Nahda        | النهضة                 |
+| Al Nasseria     | الناصرية               |
+| Al Nekhailat    | النخيلات               |
+| Al Noaf         | النعيوف                |
+| Al Nud          | النعيد                 |
+| Al Qadisia      | القادسية               |
+| Al Qasba        | القصبة                 |
+| Al Ramaqia      | الرمقية                |
+| Al Ramla        | الرميلة                |
+| Al Ramtha       | الرمثاء                |
+| Al Rifa         | الرفاع                 |
+| Al Riqa         | الريقة                 |
+| Al Sabkha       | السبخة                 |
+| Al Sajaa        | السجاعة                |
+| Al Seef         | السيف                  |
+| Al Shahba       | الشحباء                |
+| Al Sharq        | الشرق                  |
+| Al Sweihat      | السويحات               |
+| Al Tala         | التلة                  |
+| Al Turfa        | الترفة                 |
+| Al Yarmouk      | اليرموك                |
+| Bu Shagara      | بو شجرة                |
+| Dasman          | دسمان                 |
+| Industrial Area | المنطقة الصناعية       |
+| Maysalon        | ميسالون                |
+| Mowailah Camp   | معيلح كامب             |
+| Mowailah Commercial | معيلح التجارية        |
+| Muwafjah        | الموافقة               |
+| Rifa            | الرفاع                 |
+| Samnan          | سمنان                 |
+| Sharjah International Airport | مطار الشارقة الدولي    |
+| Sharjah International Airport Free Zone | المنطقة الحرة لمطار الشارقة الدولي |
+| Sharjah University City | مدينة جامعة الشارقة    |
+| Sharqan         | شرقان                 |
+| Al Qasimia      | القاسمية              |
+| Al Taawon       | التعاون

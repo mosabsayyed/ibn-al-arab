@@ -1,0 +1,42 @@
+openapi: 3.1.0
+info:
+  title: Ibn Al Arab — Initial Build API
+  version: '0.1.0'
+paths:
+  /plans:
+    get:
+      summary: List plans
+      responses:
+        '200':
+          description: OK
+  /checkout:
+    post:
+      summary: Start checkout for a plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planId:
+                  type: string
+                addressId:
+                  type: string
+      responses:
+        '200':
+          description: Checkout initiated
+
+components:
+  schemas:
+    Plan:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        priceReference:
+          type: string
