@@ -118,12 +118,57 @@ PO Decisions and references
 ---
 
 ## Appendix: placeholders that MUST be provided by PO before launch
-- `CURRENCY`
-- `VAT_RATE`
-- `PLAN_PRICES` (per plan)
-- `MAX_UPLOAD_SIZE`
-- `ALLOWED_UPLOAD_TYPES`
-- `DELIVERY_DISTRICTS`
+
+---
+
+## Context7 Guidance (Supabase / Security / CI) — added 2025-09-22
+
+This section collects concise, authoritative best-practices from Context7 references (Supabase/Postgres/RLS, CI) relevant to the feature.
+
+Profiles, Subscriptions, Payments
+- Enable Row-Level Security (RLS) on all tables containing PII or payment-related data. Default to DENY, then add minimal policies.
+- Example SQL to enable RLS and a simple user-scoped policy:
+
+```sql
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY profiles_owner ON public.profiles
+	FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY subscriptions_owner ON public.subscriptions
+	FOR SELECT USING (auth.uid() = user_id);
+
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY payments_owner ON public.payments
+	FOR SELECT USING (auth.uid() = user_id);
+```
+
+- For complex access (teams, admin views), implement SECURITY DEFINER helper functions that return allowed ids, and call those functions in policies to keep policies simple and auditable. Grant EXECUTE only to the authenticated role when appropriate.
+
+- Add b-tree indexes on columns referenced by policies (e.g. `user_id`, `subscription_id`) to keep policy evaluation fast.
+
+- Add pgtap/integration tests that assert RLS is enabled and that `auth.uid()` constraints hold for `profiles`, `payments`, and `subscriptions`. CI must fail if tests detect policy regressions.
+
+Uploads & Storage
+- Use private Supabase Storage buckets for payment proofs and other sensitive files. Do not expose private buckets publicly. Serve files with short-lived signed URLs generated server-side for admin review.
+- Path convention and access: `payment-proofs/{user_id}/{subscription_id}/{ts}-{filename}`.
+- Validate file types and sizes server-side; reject disallowed types and enforce size limits. Keep `ALLOWED_UPLOAD_TYPES` and `MAX_UPLOAD_SIZE` in runtime config (not hard-coded).
+
+Localization & UX
+- Provide full bilingual support (Arabic `ar` rtl + English `en` ltr). Store translations outside code in locale files; CI should detect missing translations.
+- UI must flip layout for RTL locales; test with visual regression checks for common pages (homepage, checkout, admin review).
+
+CI / Enforcement
+- CI must run `lint`, `typecheck`, `tests`, and a forbidden-pattern scanner on every PR. Forbidden patterns include: `FIXME_PRICE`, `HARDCODED_VAT`, `PRICE_HARDCODED`, `PRODUCT_SIGNOFF_REQUIRED` (unresolved), and `INSERT INTO public.plans` in committed SQL files.
+- Implement an automated detector for `PRODUCT_SIGNOFF_REQUIRED` so configuration placeholders block merges until PO signoff.
+- Add a CI job that runs pgtap/integration tests against a disposable Postgres instance (or a test Supabase project) to assert RLS and policy behavior.
+
+Operational Notes / Quick Checklist
+- Ensure migrations include `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` for PII/payments tables.
+- Create and deploy SECURITY DEFINER helper functions before adding policies that call them.
+- Add DB indexes for policy columns in the same migration where policies are added.
+- Add CI coverage that asserts: migrations applied, RLS enabled, policies enforce `auth.uid()` constraints, and forbidden-pattern scanner passes.
+
 
 ---
 
