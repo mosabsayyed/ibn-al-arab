@@ -42,6 +42,27 @@ Examples of forbidden commits:
 - No Raw SQL Inserts for business-critical data: Do not commit `.sql` files containing `INSERT` statements for `plans` or other critical, business-affecting seed data. Seeding must be handled by protected admin scripts that run with elevated privileges and require operator authentication/authorization.
 - Secrets and Keys: Never commit secrets. Provide a `secrets.example` or `.env.example` showing required keys; actual values must be stored in the deployment secrets manager.
 
+### Context7 guidance: Supabase Row-Level Security (RLS) — added 2025-09-22 05:30 UTC
+
+Summary (from Context7 `/supabase/supabase` best-practices):
+- Always enable RLS on PII and payments tables as a default (use `ALTER TABLE <tbl> ENABLE ROW LEVEL SECURITY`).
+- Use simple, auditable policies where possible, e.g. `USING ((select auth.uid()) = user_id)` for user-scoped rows.
+- Prefer `TO authenticated` in policies to avoid unnecessary RLS evaluation for `anon` requests.
+- For complex access logic or joins, implement `SECURITY DEFINER` functions that return allowed ids (e.g. `user_teams()`), then call them from policies to keep policy evaluation fast and safe.
+- Add B-tree indexes on columns referenced in policies (for example `user_id`) to keep RLS queries performant.
+- Where public, expose limited data via a dedicated `public.` view (or materialized view) and keep the private table under `private.` schema with strict RLS.
+- Revoke `EXECUTE` from `anon`/`public` for sensitive functions and only grant to `authenticated` when needed.
+- Add automated tests for RLS (pgTAP or integration tests) to catch regressions: e.g., verify `auth.uid()` constraints and that `anon` cannot access protected rows.
+
+References: Context7 `/supabase/supabase` snippets (RLS patterns, security-definer examples, indexing and testing recommendations).
+
+Actionable checklist to add to CI / infra (derived from Context7):
+- Ensure migrations include `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` for PII/payments tables.
+- Create and deploy `SECURITY DEFINER` helper functions for complex policies; restrict `EXECUTE` to `authenticated` role.
+- Add pgtap or integration tests that assert RLS is active and enforces `auth.uid()` constraints for `profiles`, `payments`, `subscriptions`.
+- Add DB indexes for columns used in RLS policies (`user_id`, `subscription_id`, etc.).
+
+
 ---
 
 ## 4. Code Quality & Process

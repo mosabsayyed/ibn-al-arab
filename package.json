@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+  "build": "rm -rf dist && npm run build:backend && vite build",
     "build:client": "vite build",
     "build:backend": "tsc -p backend/tsconfig.json",
     "dev:backend": "nodemon --watch 'backend/**/*.ts' --exec 'npm run build:backend && node backend/dist/server.js'",

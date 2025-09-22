@@ -1,4 +1,4 @@
-import { Plan } from '../../../shared/types';
+import { Plan } from '../../../shared/types.js';
 export type { Plan };
 
 export function validatePlan(p: Partial<Plan>) {
