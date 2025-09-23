@@ -16,14 +16,14 @@ export const defaultEmailConfig: EmailConfig = {
   port: 465,
   secure: true, // true for 465, false for other ports
   auth: {
-    user: 'ibrahim@miles.click',
-    pass: 'Ib20122012!'
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || ''
   }
 };
 
 export class EmailService {
   private transporter: nodemailer.Transporter;
-  private fromEmail: string = 'feedback_ibnalarab@miles.click';
+  private fromEmail: string = process.env.FROM_EMAIL || 'feedback_ibnalarab@miles.click';
 
   constructor(config: EmailConfig = defaultEmailConfig) {
     this.transporter = nodemailer.createTransport(config);
