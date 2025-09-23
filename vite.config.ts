@@ -6,7 +6,10 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 5181,
+    // Use the project's SPA proxy port by default and fail if it's taken.
+    port: Number(process.env.VITE_PORT || 3000),
+    // When strictPort is true Vite will throw if the port is unavailable instead of trying others
+    strictPort: true,
     proxy: {
       // Forward any /api requests to the backend server and keep the /api prefix
       // so backend routes mounted at /api/* still match.
