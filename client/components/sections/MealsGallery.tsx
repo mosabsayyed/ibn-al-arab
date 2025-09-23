@@ -41,7 +41,7 @@ export default function MealsGallery() {
         if (mounted) setMeals(data || [])
       } catch (err: any) {
         console.error(err)
-        if (mounted) setError(err?.message || 'Unknown error')
+        if (mounted) setError(err?.message || t('unknownError'))
       } finally {
         if (mounted) setLoading(false)
       }

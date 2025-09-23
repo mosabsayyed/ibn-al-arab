@@ -30,6 +30,7 @@ export default function Admin() {
 
 export function PaymentsReview({ initialPayments }: { initialPayments?: any[] } = {}) {
   const { profile, session } = useAuth();
+  const { t } = useI18n();
   const [payments, setPayments] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -95,14 +96,14 @@ export function PaymentsReview({ initialPayments }: { initialPayments?: any[] } 
                   // Use absolute if starts with http
                   <img src={p.receipt_url} alt="receipt" className="max-w-xs border" />
                 ) : (
-                  <a className="text-blue-600 underline" href={p.receipt_url} target="_blank" rel="noreferrer">View receipt</a>
+                  <a className="text-blue-600 underline" href={p.receipt_url} target="_blank" rel="noreferrer">{t('viewReceipt')}</a>
                 )
               ) : null}
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <button onClick={() => doAction(p.id, 'approve')} className="bg-green-600 text-white px-3 py-1 rounded">Approve</button>
-            <button onClick={() => doAction(p.id, 'reject')} className="bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+            <button onClick={() => doAction(p.id, 'approve')} className="bg-green-600 text-white px-3 py-1 rounded">{t('approve')}</button>
+            <button onClick={() => doAction(p.id, 'reject')} className="bg-red-600 text-white px-3 py-1 rounded">{t('reject')}</button>
           </div>
         </div>
       ))}

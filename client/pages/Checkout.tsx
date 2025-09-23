@@ -39,7 +39,7 @@ export default function Checkout() {
         if (mounted) setPlan(found ?? null)
       } catch (err: any) {
         console.error(err)
-        if (mounted) setPlanError(err?.message || 'Unknown error')
+        if (mounted) setPlanError(err?.message || t('unknownError'))
       } finally {
         if (mounted) setLoadingPlan(false)
       }

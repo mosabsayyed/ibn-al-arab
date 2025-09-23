@@ -24,7 +24,7 @@ export default function MealPlanPreview() {
         const data = await apiFetch("/api/plans");
         setPlans(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred");
+        setError(err instanceof Error ? err.message : t('unknownError'));
       } finally {
         setLoading(false);
       }
