@@ -78,17 +78,17 @@ export function PaymentsReview({ initialPayments }: { initialPayments?: any[] } 
     }
   };
 
-  if (loading) return <div>Loading payments...</div>;
+  if (loading) return <div>{t('loadingPayments')}</div>;
   return (
     <div className="space-y-4">
-      {error && <div className="text-red-600">Error: {error}</div>}
-      {payments.length === 0 && <div className="text-sm text-gray-600">No pending payments</div>}
+      {error && <div className="text-red-600">{t('errorPrefix')}: {error}</div>}
+      {payments.length === 0 && <div className="text-sm text-gray-600">{t('noPendingPayments')}</div>}
       {payments.map((p) => (
         <div key={p.id} className="border p-3 rounded flex items-start gap-4">
           <div className="flex-1">
-            <div className="font-medium">Payment: {p.id}</div>
-            <div className="text-sm text-gray-600">Plan: {p.plan_id || p.planId}</div>
-            <div className="text-sm text-gray-600">Status: {p.status}</div>
+            <div className="font-medium">{t('payment')}: {p.id}</div>
+            <div className="text-sm text-gray-600">{t('planLabel')}: {p.plan_id || p.planId}</div>
+            <div className="text-sm text-gray-600">{t('statusLabel')}: {p.status}</div>
             <div className="mt-2">
               {p.receipt_url ? (
                 // Show image preview for common image extensions, otherwise show link
