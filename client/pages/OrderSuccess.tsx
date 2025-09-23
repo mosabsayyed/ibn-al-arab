@@ -33,7 +33,7 @@ export default function OrderSuccess() {
   if (loadingPlan) {
     return (
       <div role="main" className="container py-16 max-w-lg mx-auto">
-        Loading...
+        {t('loading')}
       </div>
     );
   }
@@ -42,8 +42,8 @@ export default function OrderSuccess() {
     return (
       <div role="main" className="container py-16 max-w-lg mx-auto">
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-red-700">Plan Not Found</h1>
-          <p className="text-gray-600">Unable to load plan details.</p>
+          <h1 className="text-2xl font-bold text-red-700">{t('planNotFound')}</h1>
+          <p className="text-gray-600">{t('unableToLoadPlanDetails')}</p>
           <Link to="/">
             <Button>{t("backToHome")}</Button>
           </Link>

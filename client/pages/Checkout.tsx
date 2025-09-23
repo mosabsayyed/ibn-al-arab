@@ -137,7 +137,7 @@ export default function Checkout() {
             <Separator />
 
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">VAT (5%)</span>
+              <span className="text-muted-foreground">{t('vatLabel')}</span>
               <span className="font-medium">
                 {vatAmount.toLocaleString()} {t("AED")}
               </span>

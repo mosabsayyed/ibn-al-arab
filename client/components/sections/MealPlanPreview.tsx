@@ -10,6 +10,7 @@ import {
 import { useI18n } from "@/context/i18n";
 import { type Plan } from "@shared/types";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 
 export default function MealPlanPreview() {
   const { locale, t } = useI18n();
@@ -20,11 +21,7 @@ export default function MealPlanPreview() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch("/api/plans");
-        if (!response.ok) {
-          throw new Error("Failed to fetch plans");
-        }
-        const data = await response.json();
+        const data = await apiFetch("/api/plans");
         setPlans(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
@@ -49,11 +46,11 @@ export default function MealPlanPreview() {
   };
 
   if (loading) {
-    return <div>Loading plans...</div>;
+    return <div>{t('loadingPlans')}</div>;
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+    return <div className="text-red-500">{t('errorPrefix')}: {error}</div>;
   }
 
   return (
@@ -102,7 +99,7 @@ export default function MealPlanPreview() {
                   </Button>
                 ) : (
                   <a href={`/login?returnTo=${encodeURIComponent(`/checkout?plan=${p.id}`)}`} className="w-full inline-block text-center bg-blue-600 text-white py-2 rounded">
-                    {t("loginToSubscribe")}
+                    {t('loginToSubscribe')}
                   </a>
                 )}
               </CardContent>
