@@ -62,11 +62,28 @@ git checkout with-bugs
 # Install dependencies
 pnpm install
 
-# Build frontend (creates dist/spa)
-pnpm run build:client
+# Create environment file BEFORE building (required for frontend build)
+nano .env
+```
 
-# Build backend (creates dist/backend)
-pnpm run build:backend
+Add these environment variables (replace with your actual values):
+```env
+NODE_ENV=production
+PORT=4101
+VITE_API_URL=https://yourdomain.com
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_ANON_KEY=your_supabase_anon_key
+UPLOADS_DIR=/var/www/ibn-al-arab/uploads
+STORAGE_SECRET=your_random_secret_for_file_signing
+```
+
+Save and exit nano (Ctrl+X, then Y, then Enter).
+
+Now build the application:
+```bash
+# Build frontend (creates dist/spa) - needs VITE_API_URL from .env
+pnpm run build
 
 # Create uploads directory
 mkdir -p uploads
@@ -76,23 +93,7 @@ chown -R www-data:www-data /var/www/ibn-al-arab
 chmod -R 755 /var/www/ibn-al-arab
 ```
 
-## Step 3: Environment Configuration
-
-Create production environment file:
-```bash
-cd /var/www/ibn-al-arab
-nano .env
-```
-
-Add these environment variables (replace with your actual values):
-```env
-NODE_ENV=production
-PORT=4101
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-SUPABASE_ANON_KEY=your_supabase_anon_key
-UPLOADS_DIR=/var/www/ibn-al-arab/uploads
-STORAGE_SECRET=your_random_secret_for_file_signing
+## Step 3: PM2 Process Manager Setup
 ```
 
 ## Step 4: PM2 Process Manager Setup
