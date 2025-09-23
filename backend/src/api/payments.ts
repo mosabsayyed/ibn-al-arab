@@ -1,12 +1,14 @@
 import express from 'express'
 import multer from 'multer'
 import { LocalStorageService } from '../services/storage.js'
+import { createEmailService } from '../services/email.js'
 import { supabase } from '../lib/supabase.js'
 import { resolveUser, requireAuth } from '../middleware/auth.js'
 import { v4 as uuidv4 } from 'uuid'
 
 const upload = multer()
 const router = express.Router()
+const emailService = createEmailService()
 
 const storage = new LocalStorageService(process.env.UPLOADS_DIR || 'uploads')
 
@@ -52,10 +54,10 @@ router.post('/', resolveUser, requireAuth, upload.single('proof'), async (req, r
   }
 
   // Try to persist to DB when Supabase is configured; otherwise keep in-memory
+  // Prefer userId set by middleware (if present)
+  const userId = (req as any).userId ?? null
+  
   try {
-    // Prefer userId set by middleware (if present)
-    const userId = (req as any).userId ?? null
-
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       const toInsert = {
         id: payment.id,
@@ -71,6 +73,8 @@ router.post('/', resolveUser, requireAuth, upload.single('proof'), async (req, r
       if (error) {
         console.error('Failed to insert payment to DB, falling back to memory store', error)
       } else {
+        // Send order confirmation email
+        await sendOrderConfirmationEmail(userId, payment.id, payment.planId)
         // Return DB row if available
         return res.status(201).json(data)
       }
@@ -81,12 +85,50 @@ router.post('/', resolveUser, requireAuth, upload.single('proof'), async (req, r
 
   payments.push(payment)
 
+  // Send order confirmation email for memory store fallback
+  if (userId) {
+    await sendOrderConfirmationEmail(userId, payment.id, payment.planId)
+  }
+
   res.status(201).json(payment)
 })
 
 router.get('/', (req, res) => {
   res.json({ count: payments.length, payments })
 })
+
+// Helper function to send order confirmation email
+async function sendOrderConfirmationEmail(userId: string, paymentId: string, planId: string) {
+  if (!emailService) {
+    console.log('Email service not configured, skipping order confirmation email');
+    return;
+  }
+
+  try {
+    // Get user email from Supabase Auth
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const { data: user, error: userError } = await supabase.auth.admin.getUserById(userId);
+      if (userError || !user?.user?.email) {
+        console.error('Failed to get user email for order confirmation:', userError);
+        return;
+      }
+
+      // Get plan details
+      const { data: plans } = await supabase.from('plans').select('*').eq('id', planId).single();
+      const planName = plans?.name_en || plans?.name_ar || 'Meal Plan';
+      const amount = plans?.base_price_aed || 0;
+
+      await emailService.sendOrderConfirmation(user.user.email, {
+        orderId: paymentId,
+        planName,
+        amount,
+        currency: 'AED'
+      });
+    }
+  } catch (error) {
+    console.error('Failed to send order confirmation email:', error);
+  }
+}
 
 // Export internal store for admin endpoints/tests to mutate or query
 export function getPaymentsStore() {

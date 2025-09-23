@@ -76,6 +76,14 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 SUPABASE_ANON_KEY=your_supabase_anon_key
 UPLOADS_DIR=/var/www/ibn-al-arab/uploads
 STORAGE_SECRET=your_random_secret_for_file_signing
+
+# Email Configuration (for order notifications)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+FROM_EMAIL=Ibn Al Arab Restaurant <noreply@yourdomain.com>
 ```
 
 Save and exit nano (Ctrl+X, then Y, then Enter).
