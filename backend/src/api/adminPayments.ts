@@ -112,10 +112,16 @@ async function sendPaymentStatusEmail(userId: string, paymentId: string, planId:
         return;
       }
 
-      // Get plan details
+      // Get plan details with proper pricing
       const { data: plans } = await supabase.from('plans').select('*').eq('id', planId).single();
-      const planName = plans?.name_en || plans?.name_ar || 'Meal Plan';
-      const amount = plans?.base_price_aed || 0;
+      if (!plans) {
+        console.error('Plan not found for payment status email');
+        return;
+      }
+
+      // Use the actual plan name and discounted price (student pricing)
+      const planName = `${plans.name_en} (${plans.position_note_en})`;
+      const amount = plans.discounted_price_aed || plans.base_price_aed || 0;
 
       const orderDetails = {
         orderId: paymentId,
