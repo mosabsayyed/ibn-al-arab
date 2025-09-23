@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 .config/
-!.env
+# Ignore environment files containing secrets
+.env

@@ -4,18 +4,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-  "build": "rm -rf dist && npm run build:backend && vite build",
+    "build": "rm -rf dist && npm run build:backend && vite build",
     "build:client": "vite build",
     "build:backend": "tsc -p backend/tsconfig.json",
-    "dev:backend": "nodemon --watch 'backend/**/*.ts' --exec 'npm run build:backend && node backend/dist/server.js'",
-    "test": "vitest --run",
+    "dev:backend": "nodemon --watch 'backend/**/*.ts' --exec 'npm run build:backend && node dist/backend/server.js'",
+    "dev:backend:ts": "npx ts-node-esm backend/server.ts",
+    "test": "vitest --run --environment jsdom",
     "format.fix": "prettier --write .",
     "typecheck": "tsc"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "react-dropzone": "^14.3.8",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -49,11 +52,15 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query": "^5.84.2",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.2.1",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
+    "@types/supertest": "^6.0.3",
     "@types/three": "^0.176.0",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "autoprefixer": "^10.4.21",
@@ -64,7 +71,9 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
     "input-otp": "^1.4.2",
+    "jsdom": "^27.0.0",
     "lucide-react": "^0.539.0",
+    "multer": "^2.0.2",
     "next-themes": "^0.4.6",
     "nodemon": "^3.1.10",
     "postcss": "^8.5.6",
@@ -77,14 +86,20 @@
     "react-router-dom": "^6.30.1",
     "recharts": "^2.12.7",
     "sonner": "^1.7.4",
+    "supertest": "^7.1.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
+    "uuid": "^13.0.0",
     "vaul": "^1.1.2",
     "vite": "^7.1.2",
     "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748",
+  "vitest": {
+    "setupFiles": "./tests/setupTests.ts",
+    "environment": "jsdom"
+  }
 }

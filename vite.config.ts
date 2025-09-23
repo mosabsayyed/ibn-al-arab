@@ -6,12 +6,15 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 5181,
     proxy: {
+      // Forward any /api requests to the backend server and keep the /api prefix
+      // so backend routes mounted at /api/* still match.
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:4101',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // Do not rewrite — keep the full path so /api/plans -> http://localhost:4101/api/plans
+        // rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
     fs: {

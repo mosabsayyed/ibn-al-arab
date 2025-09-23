@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { useI18n } from "@/context/i18n";
 import { type Plan } from "@shared/types";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MealPlanPreview() {
   const { locale, t } = useI18n();
@@ -35,8 +36,16 @@ export default function MealPlanPreview() {
     fetchPlans();
   }, []);
 
+  const { user } = useAuth();
+
   const subscribe = (planId: string) => {
-    window.location.href = `/checkout?plan=${planId}`;
+    if (user) {
+      // If user is already logged in, go straight to checkout
+      window.location.href = `/checkout?plan=${planId}`;
+      return;
+    }
+    // Otherwise send to login and return to checkout after auth
+    window.location.href = `/login?returnTo=${encodeURIComponent(`/checkout?plan=${planId}`)}`;
   };
 
   if (loading) {
@@ -76,20 +85,26 @@ export default function MealPlanPreview() {
                       <span className="text-sm text-muted-foreground">
                         {t("specialStudentDiscount")}
                       </span>
-                      <div className="flex flex-wrap items-baseline gap-2">
-                        <span className="text-xl font-extrabold line-through text-muted-foreground block">
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="text-xl font-extrabold line-through text-muted-foreground">
                           {p.base_price_aed.toLocaleString()} {t("AED")}
                         </span>
-                        <span className="text-3xl font-extrabold text-emerald-600 block">
+                        <span className="text-3xl font-extrabold text-emerald-600">
                           {p.discounted_price_aed.toLocaleString()} {t("AED")}
                         </span>
                       </div>
                     </>
                   )}
                 </div>
-                <Button className="w-full" onClick={() => subscribe(p.id)}>
-                  {t("subscribe")} · {locale === "en" ? p.name_en : p.name_ar}
-                </Button>
+                {user ? (
+                  <Button className="w-full" onClick={() => subscribe(p.id)}>
+                    {t("subscribe")} · {locale === "en" ? p.name_en : p.name_ar}
+                  </Button>
+                ) : (
+                  <a href={`/login?returnTo=${encodeURIComponent(`/checkout?plan=${p.id}`)}`} className="w-full inline-block text-center bg-blue-600 text-white py-2 rounded">
+                    {t("loginToSubscribe")}
+                  </a>
+                )}
               </CardContent>
             </div>
             <div className="w-full md:w-40 h-40 md:h-auto bg-gradient-to-b from-red-50 to-red-100 flex items-center justify-center">

@@ -3,22 +3,14 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Debug logging to check if environment variables are loaded
-console.log('🔐 Supabase Config Debug:')
-console.log('URL:', supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'MISSING')
-console.log('Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 10)}...` : 'MISSING')
-
-// Check current browser URL for Site URL validation
+// Minimal runtime checks - do NOT print secrets or keys to the browser console
 if (typeof window !== 'undefined') {
-  console.log('🌐 Browser URL Check:')
-  console.log('Current origin:', window.location.origin)
-  console.log('Current href:', window.location.href)
-  console.log('📝 This origin should be in your Supabase Site URL settings')
-}
-
-if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('__YOUR_') || supabaseAnonKey.includes('__YOUR_')) {
-  console.error('❌ Supabase credentials are missing or still have placeholder values!')
-  console.error('Please check your .env file and restart the dev server.')
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Only warn that values are missing; do not log the actual values
+    console.error('❌ Supabase client configuration appears incomplete. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.')
+  } else if (supabaseUrl.includes('__YOUR_') || (typeof supabaseAnonKey === 'string' && supabaseAnonKey.includes('__YOUR_'))) {
+    console.error('❌ Supabase client configuration contains placeholder values. Please update your .env and restart the dev server.')
+  }
 }
 
 // Create client with custom fetch to ensure ONLY apikey header is sent

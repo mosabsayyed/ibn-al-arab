@@ -8,4 +8,5 @@ export type Profile = {
 export function validateProfile(p: Partial<Profile>) {
   if (!p.id) throw new Error('id required')
   if (!p.full_name) throw new Error('full_name required')
+  return true
 }

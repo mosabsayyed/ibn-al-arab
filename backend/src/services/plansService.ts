@@ -1,5 +1,5 @@
-import { supabase } from '../lib/supabase';
-import { Plan } from '../models/plan';
+import { supabase } from '../lib/supabase.js';
+import { Plan } from '../models/plan.js';
 
 export async function listActivePlans(): Promise<Plan[]> {
   const { data, error } = await supabase

@@ -1,4 +1,4 @@
-import { listActivePlans } from '../services/plansService';
+import { listActivePlans } from '../services/plansService.js';
 
 // This is a placeholder for an Express-like API handler.
 // The actual implementation will depend on the server framework used (e.g., Express, Fastify).

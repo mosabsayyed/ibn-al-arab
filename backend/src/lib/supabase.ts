@@ -1,3 +1,5 @@
+
+import 'dotenv/config'
 import { createClient } from '@supabase/supabase-js'
 
 // These variables should be loaded from environment variables (.env file)

@@ -5,21 +5,21 @@ export default function Footer() {
   return (
     <footer className="border-t bg-background">
       <div className="container py-8 text-sm text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
-        <p>
+        <p className="text-center md:text-left">
           &copy; {new Date().getFullYear()} {t("brand")} · {t("tagline")}
         </p>
-        <div className="flex items-center gap-4">
-          <a href="#plans" className="hover:text-primary">
-            {t("plans")}
+        <div className="flex items-center justify-center gap-4">
+          <a href="/terms" className="hover:text-primary text-muted-foreground">
+            {t('terms')}
           </a>
-          <a href="#gallery" className="hover:text-primary">
-            {t("mealsGallery")}
+          <a href="/privacy" className="hover:text-primary text-muted-foreground">
+            {t('privacy')}
           </a>
-          <a 
-            href="mailto:feedback_ibnalarab@miles.click?subject=Feedback%20-%20Ibn%20Al%20Arab" 
+          <a
+            href="mailto:feedback_ibnalarab@miles.click?subject=New%20Meal%20Suggestion"
             className="hover:text-primary text-red-600 font-medium"
           >
-            Feedback?
+            {t("feedback")}
           </a>
         </div>
       </div>

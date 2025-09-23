@@ -8,7 +8,7 @@ interface AuthContextType {
   loading: boolean;
   profile: any;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (email: string, password: string, fullName?: string) => Promise<{ error?: string; needsConfirmation?: boolean }>;
+  register: (email: string, password: string, fullName?: string, profileData?: any) => Promise<{ error?: string; needsConfirmation?: boolean }>;
   resetPassword: (email: string) => Promise<{ error?: string; success?: boolean }>;
   logout: () => Promise<void>;
 }
@@ -40,17 +40,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔄 Auth state changed:', event, session?.user?.email || 'No session');
-        
+
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         // Load or clear profile based on session
         if (session?.user) {
-          await loadUserProfile(session.user.id);
+          // Do not await here — make the profile load non-blocking so a stalled fetch doesn't freeze auth state handling.
+          loadUserProfile(session.user.id).catch((err) => {
+            console.warn('loadUserProfile failed (non-blocking):', err);
+          });
         } else {
           setProfile(null);
         }
-        
+
         setLoading(false);
 
         // Handle specific auth events
@@ -72,25 +75,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const loadUserProfile = async (userId: string) => {
-    console.log('👤 Loading profile for user:', userId);
+    console.log('👤 Loading profile for user (backend):', userId);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-      
-      if (error) {
-        // Treat 'no rows' as non-fatal
-        console.warn('Profile load warning:', error.message);
+      const tokenRes = await supabase.auth.getSession();
+      const jwt = tokenRes.data?.session?.access_token;
+
+      // Abortable fetch: avoid hanging forever if the backend stalls. Timeout after 8s.
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      console.log('👤 Fetching profile from backend with 8s timeout');
+      const resp = await fetch(`/api/profiles/${encodeURIComponent(userId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(jwt ? { Authorization: `Bearer ${jwt}` } : {})
+        },
+        signal: controller.signal
+      }).finally(() => clearTimeout(timeout));
+
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        console.warn('Profile fetch from backend returned non-OK:', resp.status, body);
         setProfile(null);
         return;
       }
-      
-      console.log('✅ Profile loaded:', data);
-      setProfile(data);
+
+      const data = await resp.json();
+      console.log('✅ Profile loaded from backend:', !!data);
+      if (data) {
+        const normalized = { ...data } as any;
+        const booleanAdmin = normalized.isAdmin === true || normalized.is_admin === true || normalized.is_admin === 'true' || normalized.isAdmin === 'true';
+        if (!normalized.role && booleanAdmin) normalized.role = 'admin';
+        normalized.isAdmin = booleanAdmin || !!normalized.isAdmin;
+        setProfile(normalized);
+      } else {
+        setProfile(null);
+      }
     } catch (err) {
-      console.error('💥 Profile load unexpected error:', err);
+      if ((err as any)?.name === 'AbortError') {
+        console.warn('⏱️ Profile fetch aborted due to timeout');
+      } else {
+        console.error('💥 Profile load unexpected error (backend):', err);
+      }
       setProfile(null);
     }
   };
@@ -118,8 +145,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, fullName?: string) => {
+  const register = async (email: string, password: string, fullName?: string, profileData?: any) => {
     console.log('📝 Attempting registration for:', email);
+
+    // Require phone on registration (client-side validation) and ensure E.164 format
+    const rawPhone = profileData?.phone?.toString().trim()
+    if (!rawPhone) {
+      console.warn('Registration prevented: phone is required')
+      return { error: 'phone is required' }
+    }
+    // Basic E.164 validation: leading +, country code (no leading zero), max 15 digits total
+    const e164Regex = /^\+[1-9]\d{1,14}$/
+    if (!e164Regex.test(rawPhone)) {
+      console.warn('Registration prevented: phone not in E.164 format', rawPhone)
+      return { error: 'phone must be in E.164 format, e.g. +123456789' }
+    }
     
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -140,30 +180,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user = data.user ?? (await supabase.auth.getUser()).data.user;
       const session = data.session ?? (await supabase.auth.getSession()).data.session;
       
-      // Create or update profile only when we have a user id (using upsert for safety)
-      if (user && fullName) {
-        console.log('📝 Creating/updating user profile...');
-        
-        const [first_name, ...rest] = fullName.trim().split(' ');
-        const last_name = rest.join(' ');
-        
+      // Create or update profile only when we have a user id — delegate to backend API
+      if (user) {
+        console.log('📝 Sending profile to backend for creation via /api/profiles');
         const profilePayload = {
+          // Include user_id so backend can upsert immediately after signUp even if no session JWT is present
           user_id: user.id,
           email: user.email,
-          first_name,
-          last_name,
+          firstName: profileData?.firstName || '',
+          lastName: profileData?.lastName || '',
+          phone: profileData?.phone || '',
+          isStudent: profileData?.isStudent || false,
+          universityEmail: profileData?.universityEmail || null,
+          studentIdExpiry: profileData?.studentIdExpiry || null,
           language_pref: 'en'
         };
-        
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert(profilePayload, { onConflict: 'user_id' });
-        
-        if (profileError) {
-          console.error('❌ Profile upsert error:', profileError.message);
-        } else {
-          console.log('✅ Profile created/updated successfully');
-          await loadUserProfile(user.id);
+
+        try {
+          const tokenRes = await supabase.auth.getSession();
+          const jwt = tokenRes.data?.session?.access_token;
+
+          const resp = await fetch('/api/profiles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(jwt ? { Authorization: `Bearer ${jwt}` } : {})
+            },
+            body: JSON.stringify(profilePayload)
+          });
+
+          const body = await resp.json();
+          console.log('📦 Backend /api/profiles response:', resp.status, body);
+
+          if (!resp.ok) {
+            const msg = body?.error || `Server returned ${resp.status}`;
+            console.error('❌ Backend profile create failed:', msg);
+            return { error: `Registration failed: ${msg}` };
+          }
+
+          // Set profile from backend response
+          setProfile(body);
+          console.log('✅ Profile created/updated by backend', body);
+        } catch (err) {
+          console.error('💥 Error calling backend /api/profiles:', err);
+          return { error: 'Registration failed: error creating profile on server' };
         }
       }
       
@@ -201,9 +261,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     console.log('👋 Attempting logout');
-    await supabase.auth.signOut();
-    // Don't manually clear state here - let the auth state change listener handle it
-    console.log('✅ Logout initiated');
+    
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('❌ Logout error:', error.message);
+        throw error;
+      }
+      
+      console.log('✅ Logout completed successfully');
+    } catch (err) {
+      console.error('💥 Unexpected logout error:', err);
+      // Even if logout fails, clear local state to prevent user confusion
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+    }
   };
 
   return (
